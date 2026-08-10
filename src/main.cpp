@@ -40,7 +40,7 @@
 #define LED_AUDIO_PIN   2
 
 // 正弦波
-#define AMPLITUDE       (16000.0f)  // 约 50% 满幅，避免削波 (16-bit max is 32767)
+#define AMPLITUDE       (30000.0f)  // 接近最大音量 (16-bit 满量程为 32767)
 #define TWO_PI_F        (2.0f * 3.14159265358979f)
 
 // 测试频率（交替）
@@ -83,6 +83,10 @@ void i2s_init() {
             },
         },
     };
+
+    // 强制使用 32-bit 槽宽 (BCLK = 64Fs = 2.82MHz) 以确保某些 PCM5102A 模块的内部 PLL 能够稳定锁定
+    // 数据仍然是 16-bit，I2S 控制器会自动对齐 MSB。
+    std_cfg.slot_cfg.slot_bit_width = I2S_SLOT_BIT_WIDTH_32BIT;
 
     err = i2s_channel_init_std_mode(tx_chan, &std_cfg);
     if (err != ESP_OK) {
