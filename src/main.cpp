@@ -40,7 +40,7 @@
 #define LED_AUDIO_PIN   2
 
 // 正弦波
-#define AMPLITUDE       (1879048192.0f)  // 约 87% 满幅，避免削波
+#define AMPLITUDE       (16000.0f)  // 约 50% 满幅，避免削波 (16-bit max is 32767)
 #define TWO_PI_F        (2.0f * 3.14159265358979f)
 
 // 测试频率（交替）
@@ -60,6 +60,7 @@ i2s_chan_handle_t tx_chan;
 
 void i2s_init() {
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
+    chan_cfg.auto_clear = true; // 防止DMA下溢时重复播放最后一段声音
     esp_err_t err = i2s_new_channel(&chan_cfg, &tx_chan, NULL);
     if (err != ESP_OK) {
         Serial.printf("[I2S] 创建通道失败: %s\n", esp_err_to_name(err));
@@ -68,7 +69,7 @@ void i2s_init() {
 
     i2s_std_config_t std_cfg = {
         .clk_cfg  = I2S_STD_CLK_DEFAULT_CONFIG(SAMPLE_RATE),
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_STEREO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             .bclk = (gpio_num_t)I2S_BCK_PIN,
@@ -103,7 +104,7 @@ void i2s_init() {
 //  duration_ms : 持续时间（毫秒）
 // ─────────────────────────────────────────────────────────────────────────────
 void play_tone(float freq_hz, uint32_t duration_ms) {
-    static int32_t buf[I2S_BUFFER_LEN * 2]; // 左右声道交替，乘 2
+    static int16_t buf[I2S_BUFFER_LEN * 2]; // 左右声道交替，乘 2
     uint32_t total_samples = (uint64_t)SAMPLE_RATE * duration_ms / 1000;
     uint32_t written_samples = 0;
     float    phase = 0.0f;
@@ -118,7 +119,7 @@ void play_tone(float freq_hz, uint32_t duration_ms) {
             chunk = total_samples - written_samples;
 
         for (uint32_t i = 0; i < chunk; i++) {
-            int32_t sample = (int32_t)(sinf(phase) * AMPLITUDE);
+            int16_t sample = (int16_t)(sinf(phase) * AMPLITUDE);
             buf[i * 2]     = sample; // 左声道（蜂鸣器）
             buf[i * 2 + 1] = sample; // 右声道（DAC_OUT）
             phase += phase_inc;
@@ -126,7 +127,7 @@ void play_tone(float freq_hz, uint32_t duration_ms) {
         }
 
         size_t bytes_written = 0;
-        i2s_channel_write(tx_chan, buf, chunk * 2 * sizeof(int32_t),
+        i2s_channel_write(tx_chan, buf, chunk * 2 * sizeof(int16_t),
                           &bytes_written, portMAX_DELAY);
         written_samples += chunk;
     }
