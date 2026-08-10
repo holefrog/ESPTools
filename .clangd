@@ -1,0 +1,20 @@
+CompileFlags:
+  Remove:
+    - "-fno-tree-switch-conversion"
+    - "-fstrict-volatile-bitfields"
+    - "-mdisable-hardware-atomics"
+    - "-mfix-esp32-psram-cache-issue"
+    - "-mfix-esp32-psram-cache-strategy=memw"
+    - "-mlongcalls"
+    - "-mlong-calls"
+  Add:
+    - "-isystem"
+    - "/home/david/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0"
+    - "-isystem"
+    - "/home/david/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include/c++/14.2.0/xtensa-esp-elf"
+    - "-isystem"
+    - "/home/david/.platformio/packages/toolchain-xtensa-esp-elf/lib/gcc/xtensa-esp-elf/14.2.0/include"
+    - "-isystem"
+    - "/home/david/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/sys-include"
+    - "-isystem"
+    - "/home/david/.platformio/packages/toolchain-xtensa-esp-elf/xtensa-esp-elf/include"
