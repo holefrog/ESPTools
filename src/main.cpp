@@ -6,15 +6,18 @@
  *   1. [屏幕测试] ST7789 2.4" SPI IPS 屏幕 —— 显示彩色图案 + 文字 + 帧率
  *   2. [音频测试] PCM5102A I2S DAC    —— 输出 440 Hz（A4）正弦波，持续 2 秒
  *                                         然后输出 1000 Hz，持续 2 秒，交替循环
+ *   3. [触摸测试] 电容触摸管脚          —— 读取 GPIO 32 触摸值并显示
  *
  * 引脚对照（来自 README.md）：
  *   ST7789  : MOSI=23, SCK=18, CS=5, DC=19, RST=4, BL=15
  *   PCM5102A: DIN=17, LRCK=25, BCK=26  (SCK 脚接 GND, 使能内部 PLL)
  *   音频LED : GPIO 2 (板载蓝色LED，有波形输出时灯亮)
+ *   触摸测试: GPIO 32 (Touch9)
  *
  * 成功判断：
  *   - 屏幕依次显示红/绿/蓝纯色背景，并在中间打印测试信息
  *   - 蜂鸣器（左声道）发出可听的交替音调
+ *   - 屏幕显示触摸传感器测试，手触摸 GPIO 32 时会提示检测到触摸
  *   - 串口打印帧率与测试状态
  */
 
@@ -229,8 +232,10 @@ void setup() {
     tft.println("Screen: ST7789");
     tft.setCursor(20, 140);
     tft.println("Audio: PCM5102A");
+    tft.setCursor(20, 170);
+    tft.println("Touch: GPIO 32");
     tft.setTextColor(TFT_CYAN, TFT_BLACK);
-    tft.setCursor(20, 180);
+    tft.setCursor(20, 210);
     tft.println("Starting...");
     delay(1500);
 
@@ -300,12 +305,46 @@ void loop() {
 
         freq_idx = (freq_idx + 1) % NUM_FREQS;
 
-        // 播放完一轮后重回屏幕测试
+        // 播放完一轮后进入触摸测试
         if (freq_idx == 0) {
-            Serial.println("[测试] 完成一个完整循环，重新开始...");
-            Serial.println("--------------------------------------------");
-            test_phase = 0;
+            test_phase = 4;
         }
+        break;
+    }
+
+    // ── 阶段 4：触摸测试 ────────────────────────────────────────────────────
+    case 4: {
+        Serial.println("[测试] 触摸测试开始 (GPIO 32)，持续 5 秒...");
+        tft.fillScreen(TFT_BLACK);
+        tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+        tft.setTextSize(2);
+        tft.setCursor(10, 60);
+        tft.printf("Touch Test");
+        tft.setCursor(10, 100);
+        tft.printf("Pin: GPIO 32");
+
+        uint32_t t0 = millis();
+        while (millis() - t0 < 5000) { // 持续5秒
+            int touch_val = touchRead(32);
+            tft.setCursor(10, 140);
+            tft.setTextColor(TFT_WHITE, TFT_BLACK);
+            tft.printf("Value: %03d   ", touch_val);
+
+            if (touch_val < 20) {
+                tft.setTextColor(TFT_RED, TFT_BLACK);
+                tft.setCursor(10, 180);
+                tft.printf("TOUCHED!   ");
+            } else {
+                tft.setTextColor(TFT_GREEN, TFT_BLACK);
+                tft.setCursor(10, 180);
+                tft.printf("No touch   ");
+            }
+            delay(100); // 控制读取刷新速率
+        }
+        
+        Serial.println("[测试] 完成一个完整循环，重新开始...");
+        Serial.println("--------------------------------------------");
+        test_phase = 0;
         break;
     }
 
