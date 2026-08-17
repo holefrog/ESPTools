@@ -1,0 +1,177 @@
+{
+  "uuid": "c781b7c270eaf7afff7088a54c1eac65",
+  "path": "Offline/ESPTools",
+  "name": "ESPTools",
+  "content": "",
+  "created_at": "2026-08-08 13:28:20",
+  "updated_at": "2026-08-10 12:09:52",
+  "stick": "",
+  "documents": [
+    {
+      "uuid": "8d4d25d23d0b6ebe402f00a176e59a89",
+      "title": "Sheet_1",
+      "description": "",
+      "docType": "1",
+      "master": "",
+      "thumb": "/images/thumb-default.png",
+      "components": {
+        "4e5e5775fd634dd48141eafc77c26e7a": 1,
+        "bfe4e73648904cfabc31d93353fe013d": 1,
+        "f3262de2249b41899aa6b04908411a30": 1,
+        "481f8e4ed10e4ad591955ec207ed64df": 1,
+        "4873783a772d40dfaa5b0d179bba5b2c": 1
+      },
+      "BOM": [
+        [
+          "Value",
+          "Quantity",
+          "Package",
+          "Components",
+          "CustomPara"
+        ],
+        [
+          "BATTERY",
+          1,
+          "LIPO-110-TABS",
+          "BAT1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "10uF",
+          3,
+          "CAP-TH_BD6.0-P2.50-D1.0-FD",
+          "C1,C2,C3",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "Buzzer",
+          1,
+          "CONN-TH_2P-P5.00-V-F_DB301R-5.0-2P",
+          "J1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "CON1X03",
+          1,
+          "CON--1X03",
+          "J2",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "2N3904(SOT-23)",
+          1,
+          "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-TR",
+          "Q1",
+          {
+            "Manufacturer Part": "2n3904S-RTK/PS",
+            "Manufacturer": "KEC",
+            "Supplier": "LCSC",
+            "Supplier Part": "C18536"
+          }
+        ],
+        [
+          "10k",
+          2,
+          "R0603",
+          "R1,R2",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "1k",
+          3,
+          "R0603",
+          "R3,R4,R_IN1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "SWITCH",
+          1,
+          "SWITCH-SPDT",
+          "S1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "PCM5102A",
+          1,
+          "PCM5102A_MODULE",
+          "U1",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "OLED_ST7789",
+          1,
+          "GMT024-8PIN",
+          "U2",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ],
+        [
+          "ESP32 DEVKIT V1",
+          1,
+          "ESP32-DEVKITV1",
+          "U3",
+          {
+            "Manufacturer Part": "",
+            "Manufacturer": "",
+            "Supplier": "",
+            "Supplier Part": ""
+          }
+        ]
+      ],
+      "updateTime": 1786388992,
+      "createTime": 1786220900,
+      "histories": [],
+      "created_at": "2026-08-08 13:28:20",
+      "updated_at": "2026-08-10 12:09:52"
+    }
+  ],
+  "sort": [],
+  "title": "ESPTools",
+  "foldername": "ESPTools",
+  "schfilename": "ESPTools.json",
+  "schfilemtime": 1786388992770
+}
