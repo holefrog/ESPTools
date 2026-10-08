@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+    max-width: 920px;
+    width: 100%;
+  }
+  h2 {
+    margin-top: 0;
+    color: #0f172a;
+    font-size: 20px;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 8px;
+  }
+  .svg-container {
+    width: 100%;
+    overflow-x: auto;
+    text-align: center;
+    padding: 10px 0;
+  }
+  .notes {
+    margin-top: 20px;
+    background-color: #f1f5f9;
+    border-left: 4px solid #3b82f6;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .notes ul {
+    margin: 6px 0 0 0;
+    padding-left: 20px;
+  }
+  .notes li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>PCM5102A 输出至 74HC4053 Y通道衰减、限流与偏置完整原理图 (v2)</h2>
+  
+  <div class="svg-container">
+    <svg width="860" height="500" viewBox="0 0 860 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Grid pattern -->
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+        </pattern>
+      </defs>
+      
+      <rect width="100%" height="100%" fill="url(#grid)" />
+      
+      <!-- Power rails -->
+      <!-- +3.3V Rail -->
+      <line x1="40" y1="30" x2="820" y2="30" stroke="#ef4444" stroke-width="2" />
+      <text x="45" y="24" fill="#ef4444" font-size="12" font-weight="bold">+3.3V</text>
+      
+      <!-- VBias Rail (1.65V) -->
+      <line x1="40" y1="60" x2="820" y2="60" stroke="#a855f7" stroke-width="2" stroke-dasharray="6,4" />
+      <text x="45" y="54" fill="#a855f7" font-size="12" font-weight="bold">VBias (1.65V)</text>
+      
+      <!-- GND Rail -->
+      <line x1="40" y1="470" x2="820" y2="470" stroke="#334155" stroke-width="2" />
+      <text x="45" y="464" fill="#334155" font-size="12" font-weight="bold">GND (0V)</text>
+
+      <!-- 74HC4053 Box -->
+      <rect x="470" y="170" width="160" height="210" fill="#ffffff" stroke="#0f172a" stroke-width="2" rx="4" />
+      <text x="550" y="195" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f172a">74HC4053 (U1)</text>
+      <text x="550" y="212" text-anchor="middle" font-size="11" fill="#64748b">Y Channel Switch</text>
+      
+      <!-- 4053 Pins -->
+      <!-- Y1 (Pin 2) -->
+      <text x="480" y="245" font-size="12" font-weight="bold" fill="#0f172a">Y1 (Pin 2)</text>
+      <text x="480" y="258" font-size="10" fill="#64748b">1× 直通限流档</text>
+      
+      <!-- Y0 (Pin 1) -->
+      <text x="480" y="325" font-size="12" font-weight="bold" fill="#0f172a">Y0 (Pin 1)</text>
+      <text x="480" y="338" font-size="10" fill="#64748b">-40dB 衰减档</text>
+      
+      <!-- B (Pin 10) Control -->
+      <text x="480" y="368" font-size="11" font-weight="bold" fill="#2563eb">B (Pin 10)</text>
+      
+      <!-- COM_Y (Pin 15) -->
+      <text x="620" y="275" text-anchor="end" font-size="12" font-weight="bold" fill="#0f172a">COM_Y (Pin 15)</text>
+
+      <!-- Signal Input Section -->
+      <!-- PCM1_LROUT -->
+      <text x="45" y="244" font-size="13" font-weight="bold" fill="#0284c7">PCM5102A_LROUT</text>
+      <line x1="160" y1="240" x2="190" y2="240" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- C5 Capacitor (10uF) -->
+      <rect x="190" y="232" width="6" height="16" fill="#0f172a" />
+      <rect x="202" y="232" width="6" height="16" fill="#0f172a" />
+      <text x="199" y="222" text-anchor="middle" font-size="11" font-weight="bold">C5 (10μF)</text>
+      <line x1="208" y1="240" x2="240" y2="240" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- Main Distribution Node after C5 -->
+      <circle cx="240" cy="240" r="3.5" fill="#0f172a" />
+      
+      <!-- Bias Resistor (R_bias_out / 100k) up to VBias -->
+      <line x1="240" y1="240" x2="240" y2="180" stroke="#0f172a" stroke-width="1.5" />
+      <rect x="233" y="130" width="14" height="40" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+      <text x="225" y="152" text-anchor="end" font-size="11" font-weight="bold">R_bias</text>
+      <text x="225" y="164" text-anchor="end" font-size="10" fill="#64748b">100k</text>
+      <line x1="240" y1="130" x2="240" y2="60" stroke="#0f172a" stroke-width="1.5" />
+      <circle cx="240" cy="60" r="3.5" fill="#a855f7" />
+
+      <!-- Branch 1: Pass-through with R4 (1k) to Y1 -->
+      <line x1="240" y1="240" x2="330" y2="240" stroke="#0f172a" stroke-width="1.5" />
+      <!-- R4 (1k) Resistor -->
+      <rect x="330" y="233" width="40" height="14" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+      <text x="350" y="225" text-anchor="middle" font-size="11" font-weight="bold">R4 (1k)</text>
+      <text x="350" y="260" text-anchor="middle" font-size="9" fill="#16a34a">限流保护</text>
+      <line x1="370" y1="240" x2="470" y2="240" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- Branch 2: Attenuation branch to Y0 -->
+      <line x1="240" y1="240" x2="240" y2="320" stroke="#0f172a" stroke-width="1.5" />
+      <line x1="240" y1="320" x2="280" y2="320" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- R5 (100k) Upper Arm -->
+      <rect x="280" y="313" width="40" height="14" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+      <text x="300" y="305" text-anchor="middle" font-size="11" font-weight="bold">R5 (100k)</text>
+      <line x1="320" y1="320" x2="390" y2="320" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- Node Y0 branch point -->
+      <circle cx="390" cy="320" r="3.5" fill="#0f172a" />
+      <line x1="390" y1="320" x2="470" y2="320" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- R6 (1k) Lower Arm down to VBias -->
+      <line x1="390" y1="320" x2="390" y2="370" stroke="#0f172a" stroke-width="1.5" />
+      <rect x="383" y="370" width="14" height="40" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+      <text x="375" y="392" text-anchor="end" font-size="11" font-weight="bold">R6</text>
+      <text x="375" y="404" text-anchor="end" font-size="10" fill="#64748b">1k</text>
+      <line x1="390" y1="410" x2="390" y2="440" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- Connecting bottom of R6 to VBias trace -->
+      <line x1="390" y1="440" x2="430" y2="440" stroke="#a855f7" stroke-width="1.5" />
+      <line x1="430" y1="440" x2="430" y2="60" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3" />
+      <circle cx="430" cy="60" r="3.5" fill="#a855f7" />
+      <text x="435" y="435" font-size="10" fill="#a855f7">至 VBias (1.65V)</text>
+
+      <!-- Control pin GP3 -->
+      <line x1="360" y1="365" x2="470" y2="365" stroke="#2563eb" stroke-width="1.5" />
+      <text x="270" y="369" font-size="12" font-weight="bold" fill="#2563eb">MCU_GP3 (S_B)</text>
+      <text x="270" y="383" font-size="10" fill="#64748b">1: 直通 / 0: 衰减</text>
+
+      <!-- Output Section from COM_Y -->
+      <line x1="630" y1="270" x2="670" y2="270" stroke="#0f172a" stroke-width="1.5" />
+      
+      <!-- C3 Output Coupling (10uF) -->
+      <rect x="670" y="262" width="6" height="16" fill="#0f172a" />
+      <rect x="682" y="262" width="6" height="16" fill="#0f172a" />
+      <text x="679" y="252" text-anchor="middle" font-size="11" font-weight="bold">C3 (10μF)</text>
+      
+      <line x1="688" y1="270" x2="740" y2="270" stroke="#0f172a" stroke-width="1.5" />
+      <circle cx="740" cy="270" r="3.5" fill="#0f172a" />
+      
+      <!-- R10 Pulldown to GND (100k) -->
+      <line x1="740" y1="270" x2="740" y2="340" stroke="#0f172a" stroke-width="1.5" />
+      <rect x="733" y="340" width="14" height="40" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" />
+      <text x="755" y="362" font-size="11" font-weight="bold">R10</text>
+      <text x="755" y="374" font-size="10" fill="#64748b">100k (泄放)</text>
+      <line x1="740" y1="380" x2="740" y2="470" stroke="#0f172a" stroke-width="1.5" />
+      <circle cx="740" cy="470" r="3.5" fill="#334155" />
+      
+      <!-- Output Probe Port -->
+      <line x1="740" y1="270" x2="795" y2="270" stroke="#0f172a" stroke-width="1.5" />
+      <circle cx="800" cy="270" r="5" fill="none" stroke="#0f172a" stroke-width="2" />
+      <text x="810" y="274" font-size="12" font-weight="bold" fill="#0f172a">DAC_Out</text>
+    </svg>
+  </div>
+
+  <div class="notes">
+    <strong>电路拓扑设计与保护机制说明：</strong>
+    <ul>
+      <li><strong>直通限流保护 (R4 = 1kΩ)：</strong> 位于 <code>VBias</code> 偏置节点之后、4053 的 <code>Y1</code> 输入之前。有效防止输出探针短路或误碰高低阻节点时大电流烧毁 4053 开关管，同时隔离容性负载防止自激。</li>
+      <li><strong>共用虚地偏置 (R_bias = 100kΩ)：</strong> 经 <code>C5 (10μF)</code> 隔直后直接挂载至 <code>VBias (1.65V)</code>，将进入 4053 的双向交流信号直流基准抬升至单电源中点，消除负半周过零削波失真。</li>
+      <li><strong>微信号分压衰减 (R5/R6 = 100kΩ / 1kΩ)：</strong> 构成 <strong>-40dB (0.01×)</strong> 衰减网络，下臂接 <code>VBias</code>，确保微弱小信号依然对称骑在 1.65V 偏置电平上。</li>
+      <li><strong>输出隔直与真地复位 (C3 / R10)：</strong> <code>COM_Y</code> 经 <code>C3 (10μF)</code> 彻底剥离内部 1.65V 直流成分，末端 <code>R10 (100kΩ)</code> 对系统真地 (GND) 泄放，确保探针对外直流偏移严格为 0V。</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

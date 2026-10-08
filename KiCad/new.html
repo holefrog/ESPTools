@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32-S3 混合信号分析与寻迹测试终端 · 完整原理连接图</title>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 { font-size: 18px; color: #38bdf8; margin-bottom: 2px; text-align: center; }
+    p.subtitle { font-size: 12px; color: #94a3b8; margin-bottom: 15px; text-align: center; }
+    .container {
+      width: 100%;
+      max-width: 1500px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    svg {
+      display: block;
+      width: 1600px;
+      height: 900px;
+      background-color: #0f172a;
+    }
+    .box { fill: #1e293b; stroke: #64748b; stroke-width: 1.5; rx: 4px; }
+    .mcu-box { fill: #0f2847; stroke: #38bdf8; stroke-width: 2; rx: 4px; }
+    .module-box { fill: #2e1065; stroke: #a855f7; stroke-width: 2; rx: 4px; }
+    .text-title { font-size: 12px; font-weight: bold; fill: #f8fafc; font-family: sans-serif; }
+    .text-pin { font-size: 9px; fill: #cbd5e1; font-family: monospace; }
+    .wire { stroke: #94a3b8; stroke-width: 1.2; fill: none; stroke-linecap: round; }
+    .wire-5v { stroke: #ef4444; stroke-width: 1.8; fill: none; }
+    .wire-3v3 { stroke: #22c55e; stroke-width: 1.8; fill: none; }
+    .wire-gnd { stroke: #38bdf8; stroke-width: 2; fill: none; }
+    .wire-bias { stroke: #eab308; stroke-width: 1.2; fill: none; stroke-dasharray: 3,2; }
+    .dot { fill: #f8fafc; }
+  </style>
+</head>
+<body>
+
+<h1>ESP32-S3 混合信号分析与寻迹测试终端</h1>
+<p class="subtitle">全系统物理连线贯通图（双电源总线 + 模拟前端 + 74HC4053 + 模块化外设）</p>
+
+<div class="container">
+  <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ================= 全局电源总线条 ================= -->
+    <line x1="50" y1="30" x2="1550" y2="30" class="wire-5v" />
+    <text x="60" y="22" fill="#ef4444" font-size="10" font-family="monospace">＋5V 主电源总线 (USB / 模块供电)</text>
+
+    <line x1="50" y1="55" x2="1550" y2="55" class="wire-3v3" />
+    <text x="60" y="47" fill="#22c55e" font-size="10" font-family="monospace">＋3.3V 精密测量总线 (LDO 稳压)</text>
+
+    <line x1="50" y1="875" x2="1550" y2="875" class="wire-gnd" />
+    <text x="60" y="867" fill="#38bdf8" font-size="10" font-family="monospace">GND 系统共地总线</text>
+
+    <!-- ================= 1. VBIAS 发生器 ================= -->
+    <rect x="50" y="100" width="160" height="130" class="box" />
+    <text x="60" y="120" class="text-title" fill="#eab308">VBIAS 发生器 (1.65V)</text>
+    <text x="60" y="145" class="text-pin">R_B1 (10k) 接 +3.3V</text>
+    <text x="60" y="170" class="text-pin">R_B2 (10k) 接 GND</text>
+    <text x="60" y="195" class="text-pin">C_B1 (10uF) &amp; C_B2 (100nF)</text>
+    <line x1="130" y1="230" x2="130" y2="260" class="wire-bias" />
+    <text x="135" y="250" fill="#eab308" font-size="9">VBIAS 1.65V</text>
+
+    <!-- ================= 2. 模拟采集前端 (ADC Chain) ================= -->
+    <rect x="250" y="100" width="280" height="280" class="box" />
+    <text x="265" y="120" class="text-title" fill="#38bdf8">模拟采集前端 (ADC Chain)</text>
+    <text x="265" y="150" class="text-pin">TP_IN ── [Cin:10uF] ──┬── R1(10k) ── Y0</text>
+    <text x="265" y="180" class="text-pin">                     └── R2(90k) ──┬── R3(10k) ── GND</text>
+    <text x="265" y="210" class="text-pin">                                   └── Y1</text>
+    <text x="265" y="250" class="text-pin">COM_Y ──┬── [R:100k] ── VBIAS (1.65V)</text>
+    <text x="265" y="280" class="text-pin">        ├── D1, D2 (肖特基钳位至 3.3V/GND)</text>
+    <text x="265" y="310" class="text-pin">        ├── [C:100pF] ── GND</text>
+    <text x="265" y="340" class="text-pin">        └── TO_MCU_ADC (连至 MCU GP1)</text>
+
+    <!-- ================= 3. 模拟开关 74HC4053 ================= -->
+    <rect x="580" y="100" width="180" height="280" class="box" />
+    <text x="595" y="120" class="text-title" fill="#a855f7">模拟开关 (74HC4053)</text>
+    <text x="610" y="160" class="text-pin">Y0 (Pin 1) ◄── 采集直通</text>
+    <text x="610" y="190" class="text-pin">Y1 (Pin 2) ◄── 采集衰减</text>
+    <text x="610" y="220" class="text-pin">X0 (Pin 12) ◄── 发生直通</text>
+    <text x="610" y="250" class="text-pin">X1 (Pin 13) ◄── 发生衰减</text>
+    <text x="610" y="280" class="text-pin">COM_Y (Pin 4) ──► ADC</text>
+    <text x="610" y="310" class="text-pin">COM_X (Pin 14) ──► PROBE</text>
+    <text x="610" y="340" class="text-pin">S_A(GP2) | S_B(GP12) | ~E(GND)</text>
+
+    <!-- ================= 4. 音频DAC发生与输出前端 ================= -->
+    <rect x="250" y="420" width="310" height="260" class="box" />
+    <text x="265" y="440" class="text-title" fill="#ec4899">探针输出前端 (DAC &amp; PROBE_OUT)</text>
+    <text x="265" y="470" class="text-pin">PCM_R_OUT ── [C1:10uF] ──┬── [R:100k] ── VBIAS</text>
+    <text x="265" y="500" class="text-pin">                         ├── R4(1k) ── X0</text>
+    <text x="265" y="530" class="text-pin">                         └── R5(100k) ──┬── R6(1k) ── VBIAS</text>
+    <text x="265" y="560" class="text-pin">                                        └── X1</text>
+    <text x="265" y="600" class="text-pin">COM_X ── [C2:10uF] ──┬── [R:100k] ── GND</text>
+    <text x="265" y="630" class="text-pin">                     └── PROBE_OUT (TestPoint)</text>
+
+    <!-- ================= 5. 甲类寻迹预听功放 ================= -->
+    <rect x="590" y="420" width="280" height="260" class="box" />
+    <text x="605" y="440" class="text-title" fill="#f97316">甲类预听功放 (S8050)</text>
+    <text x="605" y="470" class="text-pin">PCM_L_OUT ── [Cin:10uF] ── S8050 Base</text>
+    <text x="605" y="500" class="text-pin">Base偏置 ──┬── [R:22k] ── +5V</text>
+    <text x="605" y="525" class="text-pin">           └── [R:4.7k] ── GND</text>
+    <text x="605" y="560" class="text-pin">Emitter (E) ── [Re:15Ω] ── GND</text>
+    <text x="605" y="590" class="text-pin">Collector (C) ── Speaker(-)</text>
+    <text x="605" y="620" class="text-pin">Speaker(+) ── +5V 主电源</text>
+
+    <!-- ================= 6. 核心外设模块群 ================= -->
+    <!-- MCU -->
+    <rect x="920" y="100" width="180" height="380" class="mcu-box" />
+    <text x="935" y="125" class="text-title" fill="#38bdf8">MCU1: ESP32-S3</text>
+    <text x="935" y="160" class="text-pin">GP1 ◄── TO_MCU_ADC</text>
+    <text x="935" y="190" class="text-pin">GP2 ──► RANGE_SEL</text>
+    <text x="935" y="220" class="text-pin">GP12 ──► LEVEL_SEL</text>
+    <text x="935" y="250" class="text-pin">GP4,5,6 ──► I2S (PCM5102)</text>
+    <text x="935" y="280" class="text-pin">GP7,8,9 ──► SPI (ST7789)</text>
+    <text x="935" y="310" class="text-pin">GP10-13 ──► EC11 编码器</text>
+    <text x="935" y="350" class="text-pin">5V / 3V3 / GND 接入总线</text>
+
+    <!-- PCM5102A -->
+    <rect x="1150" y="100" width="180" height="320" class="module-box" />
+    <text x="1165" y="125" class="text-title" fill="#a855f7">PCM1: PCM5102A</text>
+    <text x="1165" y="160" class="text-pin">VIN (+5V), A3V3, GND</text>
+    <text x="1165" y="190" class="text-pin">BCK, LCK, DIN ◄── MCU</text>
+    <text x="1165" y="220" class="text-pin">XSMT ──► +3.3V</text>
+    <text x="1165" y="260" class="text-pin">ROUT ──► PCM_R_OUT</text>
+    <text x="1165" y="290" class="text-pin">LROUT ──► PCM_L_OUT</text>
+
+    <!-- ST7789 & EC11 -->
+    <rect x="1360" y="100" width="190" height="320" class="module-box" />
+    <text x="1375" y="125" class="text-title" fill="#a855f7">DISP1: 2.4" TFT</text>
+    <text x="1375" y="160" class="text-pin">VCC (+5V), BLK (+5V)</text>
+    <text x="1375" y="190" class="text-pin">GND, CS (GND)</text>
+    <text x="1375" y="220" class="text-pin">SCL, SDA, RES, DC ──► SPI</text>
+    <text x="1375" y="260" class="text-pin">A, B, PUSH ──► 编码器信号</text>
+
+    <!-- ================= 物理母线连接物理导线 (Wires) ================= -->
+    <!-- 连线：VBIAS 到 各偏置电阻 -->
+    <path d="M 130 260 L 130 350 L 250 350" class="wire-bias" />
+    <path d="M 130 350 L 130 520 L 250 520" class="wire-bias" />
+
+    <!-- 连线：74HC4053 信号交互 -->
+    <line x1="530" y1="280" x2="580" y2="280" class="wire" />
+    <text x="545" y="272" fill="#38bdf8" font-size="8">COM_Y</text>
+
+    <line x1="560" y1="600" x2="580" y2="310" class="wire" />
+    <text x="535" y="445" fill="#38bdf8" font-size="8">COM_X</text>
+
+    <!-- 连线：MCU 到 4053 控制 -->
+    <path d="M 920 190 L 780 190 L 780 340 L 760 340" class="wire" />
+    
+    <!-- 连线：PCM5102A 输出到前端 -->
+    <path d="M 1150 290 L 560 290" class="wire" />
+    <path d="M 1150 220 L 1050 220 L 1050 500 L 870 500" class="wire" />
+
+  </svg>
+</div>
+
+<div style="margin-top: 15px; font-size: 11px; color: #94a3b8; text-align: center;">
+  提示：红色代表 +5V 总线，绿色代表 +3.3V 总线，蓝色代表 GND，黄色虚线代表 VBIAS (1.65V) 偏置网段。
+</div>
+
+</body>
+</html>

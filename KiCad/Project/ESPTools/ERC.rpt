@@ -1,0 +1,18 @@
+ERC report (2026-10-04T14:27:10-0700, Encoding UTF8)
+Report includes: Errors, Warnings
+
+***** Sheet /
+[footprint_link_issues]: The current configuration does not include the footprint library ''.
+    ; warning
+    @(6700 mils, 2950 mils): Symbol MCU1 [ESP32_S3_SuperMini]
+[footprint_link_issues]: The current configuration does not include the footprint library ''.
+    ; warning
+    @(6600 mils, 5200 mils): Symbol U2 [PCM5102A_L_Module]
+[footprint_link_issues]: The current configuration does not include the footprint library ''.
+    ; warning
+    @(9600 mils, 2900 mils): Symbol DISP1 [Aideepen_ST7789_2.4IN_EC11]
+[footprint_link_issues]: The current configuration does not include the footprint library 'Connector_PinHeader'.
+    ; warning
+    @(9200 mils, 5100 mils): Symbol U3 [MAX98357A_Module]
+
+ ** ERC messages: 4  Errors 0  Warnings 4

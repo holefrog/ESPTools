@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCM5102A 单管射随监听驱动原理图 (最终标定版)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+        h2 {
+            color: #58a6ff;
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+        .desc {
+            font-size: 13px;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        svg {
+            display: block;
+            margin: 0 auto;
+            background-color: #0f141c;
+            border-radius: 6px;
+            border: 1px solid #21262d;
+        }
+        .wire { stroke: #58a6ff; stroke-width: 2; fill: none; }
+        .pwr-wire { stroke: #f85149; stroke-width: 2.5; fill: none; }
+        .gnd-wire { stroke: #8b949e; stroke-width: 2; fill: none; }
+        .component { stroke: #e6edf3; stroke-width: 2; fill: none; }
+        .node { fill: #58a6ff; }
+        .pwr-node { fill: #f85149; }
+        .gnd-node { fill: #8b949e; }
+        .text { fill: #f0f6fc; font-family: monospace; font-size: 12px; text-anchor: middle; }
+        .val { fill: #7ee787; font-family: monospace; font-size: 12px; text-anchor: middle; }
+        .spec { fill: #d2a8ff; font-family: monospace; font-size: 11px; text-anchor: middle; }
+        .note-box {
+            margin-top: 20px;
+            padding: 16px;
+            background: #0f141c;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .note-title { color: #58a6ff; font-weight: bold; margin-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #30363d; padding: 6px 12px; text-align: left; }
+        th { background: #161b22; color: #58a6ff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>PCM5102A 单管射极跟随器 8Ω 喇叭监听驱动原理图</h2>
+    <div class="desc">
+        Class-A 射极跟随缓冲 · 隔直输出无直流 · 目标监听功率 ~4.5mW · 静态电流 ~35mA
+    </div>
+
+    <svg width="840" height="480" viewBox="0 0 840 480">
+        <!-- 5V 电源轨 -->
+        <line x1="40" y1="40" x2="800" y2="40" class="pwr-wire" />
+        <text x="815" y="45" fill="#f85149" font-family="monospace" font-size="14" font-weight="bold">+5V</text>
+
+        <!-- DAC 输入端子 -->
+        <rect x="30" y="225" width="130" height="45" rx="4" fill="#21262d" stroke="#30363d" stroke-width="1.5"/>
+        <text x="95" y="244" class="text" font-size="11">PCM5102A</text>
+        <text x="95" y="260" class="val" font-size="11">ROUT (0V DC / 2.97Vpk)</text>
+
+        <!-- 输入隔直电容 Cin (10uF, 正极接右侧) -->
+        <line x1="160" y1="247" x2="195" y2="247" class="wire" />
+        <line x1="195" y1="232" x2="195" y2="262" class="component" stroke-width="2.5" />
+        <line x1="203" y1="232" x2="203" y2="262" class="component" stroke-width="2.5" />
+        <text x="210" y="240" fill="#f85149" font-family="monospace" font-size="12">+</text>
+        <line x1="203" y1="247" x2="230" y2="247" class="wire" />
+        <text x="199" y="222" class="text">CIN</text>
+        <text x="199" y="280" class="val">10µF/16V</text>
+
+        <!-- 输入衰减电阻 R3 (2.7k) -->
+        <rect x="230" y="237" width="55" height="20" class="component" fill="#161b22"/>
+        <text x="257" y="227" class="text">R3</text>
+        <text x="257" y="273" class="val">2.7kΩ</text>
+        <line x1="285" y1="247" x2="350" y2="247" class="wire" />
+
+        <!-- 基极偏置节点与分压网络 -->
+        <circle cx="350" cy="247" r="4" class="node" />
+
+        <!-- R1 上偏置 (1.0k) -->
+        <line x1="350" y1="247" x2="350" y2="160" class="wire" />
+        <rect x="340" y="110" width="20" height="50" class="component" fill="#161b22"/>
+        <text x="310" y="132" class="text">R1</text>
+        <text x="310" y="148" class="val">1.0kΩ</text>
+        <line x1="350" y1="110" x2="350" y2="40" class="wire" />
+        <circle cx="350" cy="40" r="4" class="pwr-node" />
+
+        <!-- R2 下偏置 (1.0k) -->
+        <line x1="350" y1="247" x2="350" y2="330" class="wire" />
+        <rect x="340" y="330" width="20" height="50" class="component" fill="#161b22"/>
+        <text x="310" y="352" class="text">R2</text>
+        <text x="310" y="368" class="val">1.0kΩ</text>
+        <line x1="350" y1="380" x2="350" y2="430" class="wire" />
+        <!-- GND 符号 -->
+        <line x1="335" y1="430" x2="365" y2="430" class="gnd-wire" stroke-width="2.5" />
+        <line x1="342" y1="436" x2="358" y2="436" class="gnd-wire" stroke-width="2" />
+        <line x1="347" y1="442" x2="353" y2="442" class="gnd-wire" stroke-width="1.5" />
+        <text x="350" y="458" class="spec">GND</text>
+
+        <!-- 连接至 S8050 基极 -->
+        <line x1="350" y1="247" x2="450" y2="247" class="wire" />
+        <text x="395" y="238" class="spec">VB ≈ 2.32V</text>
+        <text x="395" y="263" class="spec">vb(pk) ≈ 0.30V</text>
+
+        <!-- 三极管 Q1 (S8050 NPN 射随接法) -->
+        <circle cx="480" cy="247" r="30" stroke="#30363d" stroke-width="1.5" fill="#161b22" />
+        <!-- Base -->
+        <line x1="450" y1="247" x2="468" y2="247" class="component" stroke-width="2.5" />
+        <line x1="468" y1="227" x2="468" y2="267" class="component" stroke-width="3" />
+        <!-- Collector -->
+        <line x1="468" y1="235" x2="492" y2="215" class="component" stroke-width="2" />
+        <line x1="492" y1="215" x2="492" y2="40" class="wire" />
+        <circle cx="492" cy="40" r="4" class="pwr-node" />
+        <text x="510" y="90" class="spec">Collector 接 +5V</text>
+        <!-- Emitter (含箭头) -->
+        <line x1="468" y1="259" x2="492" y2="279" class="component" stroke-width="2" />
+        <polygon points="490,271 497,282 483,280" fill="#e6edf3" />
+        <line x1="492" y1="279" x2="492" y2="315" class="wire" />
+
+        <text x="520" y="242" class="text" font-weight="bold">Q1</text>
+        <text x="532" y="258" class="val">S8050</text>
+
+        <!-- 发射极节点 -->
+        <circle cx="492" cy="315" r="4" class="node" />
+        <text x="430" y="310" class="spec">VE ≈ 1.62V (IQ ≈ 35mA)</text>
+
+        <!-- 发射极电阻 RE (47Ω / 0.5W) -->
+        <line x1="492" y1="315" x2="492" y2="340" class="wire" />
+        <rect x="482" y="340" width="20" height="45" class="component" fill="#161b22"/>
+        <text x="455" y="358" class="text">RE</text>
+        <text x="445" y="374" class="val">47Ω/0.5W</text>
+        <line x1="492" y1="385" x2="492" y2="430" class="wire" />
+        <!-- GND -->
+        <line x1="477" y1="430" x2="507" y2="430" class="gnd-wire" stroke-width="2.5" />
+        <line x1="484" y1="436" x2="500" y2="436" class="gnd-wire" stroke-width="2" />
+        <line x1="489" y1="442" x2="495" y2="442" class="gnd-wire" stroke-width="1.5" />
+        <text x="492" y="458" class="spec">GND</text>
+
+        <!-- 输出支路：Cout (1000uF, 正极接 Emitter) -->
+        <line x1="492" y1="315" x2="580" y2="315" class="wire" />
+        <line x1="580" y1="300" x2="580" y2="330" class="component" stroke-width="2.5" />
+        <text x="570" y="308" fill="#f85149" font-family="monospace" font-size="12">+</text>
+        <line x1="588" y1="300" x2="588" y2="330" class="component" stroke-width="2.5" />
+        <line x1="588" y1="315" x2="660" y2="315" class="wire" />
+        <text x="584" y="290" class="text">COUT</text>
+        <text x="584" y="348" class="val">1000µF/16V</text>
+
+        <!-- 监听喇叭 8Ω -->
+        <line x1="660" y1="315" x2="690" y2="315" class="wire" />
+        <rect x="690" y="295" width="25" height="40" class="component" fill="#21262d"/>
+        <polygon points="715,300 745,280 745,350 715,330" class="component" fill="#21262d"/>
+        <text x="775" y="310" class="text">Speaker</text>
+        <text x="775" y="328" class="val">8Ω (0.5W)</text>
+        <text x="775" y="344" class="spec">P ≈ 4.5mW</text>
+
+        <!-- 喇叭接地 -->
+        <line x1="702" y1="335" x2="702" y2="430" class="wire" />
+        <line x1="687" y1="430" x2="717" y2="430" class="gnd-wire" stroke-width="2.5" />
+        <line x1="694" y1="436" x2="710" y2="436" class="gnd-wire" stroke-width="2" />
+        <line x1="699" y1="442" x2="705" y2="442" class="gnd-wire" stroke-width="1.5" />
+        <text x="702" y="458" class="spec">GND</text>
+    </svg>
+
+    <div class="note-box">
+        <div class="note-title">设计验证与工作点核算</div>
+        <table>
+            <tr>
+                <th>参数维度</th>
+                <th>理论推导值</th>
+                <th>设计功能与边界约束</th>
+            </tr>
+            <tr>
+                <td>静态直流工作点</td>
+                <td>$V_B \approx 2.32\text{V},\ V_E \approx 1.62\text{V},\ I_Q \approx 34.5\text{mA}$</td>
+                <td>分压网络 $R_1/R_2=1\text{k}/1\text{k}$ 提供 $2.1\text{mA}$ 分流，抵御基极电流抽取与温漂</td>
+            </tr>
+            <tr>
+                <td>输入衰减与反射阻抗</td>
+                <td>$Z_{in} \approx 302\ \Omega,\ A_{atten} \approx 0.101$</td>
+                <td>$R_3=2.7\text{k}\Omega$ 将 PCM5102A 的 $2.97\text{V}_{pk}$ 压至 $0.30\text{V}_{pk}$，DAC 负载达 $3.0\text{k}\Omega$</td>
+            </tr>
+            <tr>
+                <td>负半周带载临界能力</td>
+                <td>$V_{pk(max)} = \frac{I_Q}{1/8 + 1/47} \approx 0.236\text{V} \sim 0.27\text{V}$</td>
+                <td>精准匹配 Class-A 线性拉电流边界，无硬削顶/削底失真</td>
+            </tr>
+            <tr>
+                <td>最终输出功率与隔直</td>
+                <td>$P_{out} \approx 4.5\text{mW} \text{ / } 8\ \Omega$ (喇叭 DC 电流 = 0)</td>
+                <td>$C_{OUT}=1000\mu\text{F}$ 截止频率 $f_c \approx 20\text{Hz}$，满足蜂鸣、提示音与扫频全段寻迹</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
