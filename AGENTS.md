@@ -27,7 +27,9 @@ link_shim .github/copilot-instructions.md AGENTS.md
 link_shim .agents/rules/00-core.md ../../AGENTS.md
 
 注意：
-- 去 Antigravity 的 Customizations → Rules 把 .agents/rules/00-core.md 设为 Always On；
+- 去 Agent 面板（右侧聊天栏）右上角 "…" → Customizations → Rules，
+  把 .agents/rules/00-core.md 的激活方式设为 Always On（注意不是 Settings 里的
+  Customizations，那个页面没有 Rules 面板）；
   之后不要在 Antigravity UI 里编辑它（会破坏软链接），改规则只改 AGENTS.md。
 - VS Code 未装 AI 插件时，这些垫片零影响。
 -->
