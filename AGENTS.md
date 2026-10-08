@@ -23,7 +23,7 @@ ln -s "$src" "$target" && echo "已链接：$target -> $src"
 link_shim GEMINI.md AGENTS.md
 link_shim CLAUDE.md AGENTS.md
 link_shim .clinerules AGENTS.md
-link_shim .github/copilot-instructions.md AGENTS.md
+link_shim .github/copilot-instructions.md ../AGENTS.md
 link_shim .agents/rules/00-core.md ../../AGENTS.md
 
 注意：
